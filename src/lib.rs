@@ -22,34 +22,6 @@ use rocket::{Build, Rocket};
 #[database("launchpad_db")]
 pub struct DBPool(PgConnection);
 
-// pub mod http_models {
-//     use chrono::NaiveDate;
-//     use rocket::serde::{Deserialize, Serialize};
-
-//     use super::models::Project;
-
-//     #[derive(Deserialize)]
-//     pub struct ProjectBasic {
-//         pub end_date: Option<NaiveDate>,
-//         pub start_date: NaiveDate,
-//         pub title: String,
-//     }
-
-//     #[derive(Deserialize)]
-//     pub struct StandardRequest<T> {
-//         pub data: T,
-//     }
-
-//     #[derive(Serialize)]
-//     pub struct StandardResponse<T> {
-//         pub data: T,
-//     }
-
-//     pub type ProjectRequest = StandardRequest<ProjectBasic>;
-//     pub type ProjectResponse = StandardResponse<Project>;
-//     pub type ProjectListResponse = StandardResponse<Vec<Project>>;
-// }
-
 pub fn blast_off(db_url: &str) -> Rocket<Build> {
     dotenv().ok();
 
