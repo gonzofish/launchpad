@@ -8,7 +8,7 @@ fn test_create() {
 }
 
 fn blast_off() -> Client {
-    let test_instance = launchpad::blast_off("DATABASE_URL");
+    let test_instance = launchpad::blast_off("TEST_DATABASE_URL");
 
     Client::tracked(test_instance).expect("Rocket instance is invalid")
 }
