@@ -1,35 +1,18 @@
 use rocket::Route;
 
-use chrono::NaiveDate;
 use diesel::prelude::*;
 use rocket::response::status::Created;
-use rocket::serde::{json::Json, Deserialize, Serialize};
+use rocket::serde::json::Json;
 
 use crate::error::CustomError;
-use crate::models::{NewProject, Project};
+use crate::models::db_models;
+use crate::models::http_models;
 use crate::schema;
 use crate::DBPool;
 
-#[derive(Deserialize)]
-struct ProjectBasic {
-    end_date: Option<NaiveDate>,
-    start_date: NaiveDate,
-    title: String,
-}
-
-#[derive(Deserialize)]
-struct StandardRequest<T> {
-    data: T,
-}
-
-#[derive(Serialize)]
-struct StandardResponse<T> {
-    data: T,
-}
-
-type ProjectRequest = StandardRequest<ProjectBasic>;
-type ProjectResponse = StandardResponse<Project>;
-type ProjectListResponse = StandardResponse<Vec<Project>>;
+type ProjectRequest = http_models::StandardRequest<http_models::ProjectBasic>;
+type ProjectResponse = http_models::StandardResponse<db_models::Project>;
+type ProjectListResponse = http_models::StandardResponse<Vec<db_models::Project>>;
 
 pub fn get_routes() -> Vec<Route> {
     routes![
@@ -45,10 +28,10 @@ async fn create_project(
     conn: DBPool,
     body: Json<ProjectRequest>,
 ) -> Result<Created<Json<ProjectResponse>>, CustomError> {
-    let new_project: Project = conn
+    let new_project: db_models::Project = conn
         .run(move |c| {
             diesel::insert_into(schema::projects::table)
-                .values(NewProject {
+                .values(db_models::NewProject {
                     end_date: body.data.end_date,
                     start_date: body.data.start_date,
                     title: &body.data.title,
@@ -69,10 +52,10 @@ async fn update_project(
 ) -> Result<Json<ProjectResponse>, CustomError> {
     use schema::projects::dsl::projects;
 
-    let response: Project = conn
+    let response: db_models::Project = conn
         .run(move |c| {
             diesel::update(projects.find(id))
-                .set(NewProject {
+                .set(db_models::NewProject {
                     end_date: body.data.end_date,
                     start_date: body.data.start_date,
                     title: &body.data.title,
@@ -86,7 +69,7 @@ async fn update_project(
 
 #[get("/project")]
 async fn get_all_projects(conn: DBPool) -> Result<Json<ProjectListResponse>, CustomError> {
-    let projects: Vec<Project> = conn
+    let projects: Vec<db_models::Project> = conn
         .run(move |c| schema::projects::table.get_results(c))
         .await?;
 
@@ -95,7 +78,7 @@ async fn get_all_projects(conn: DBPool) -> Result<Json<ProjectListResponse>, Cus
 
 #[get("/project/<id>")]
 async fn get_one_project(conn: DBPool, id: i32) -> Result<Json<ProjectResponse>, CustomError> {
-    let project: Project = conn
+    let project: db_models::Project = conn
         .run(move |c| schema::projects::table.find(id).get_result(c))
         .await?;
     let response = ProjectResponse { data: project };
