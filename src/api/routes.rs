@@ -1,35 +1,18 @@
 use rocket::Route;
 
-use chrono::NaiveDate;
 use diesel::prelude::*;
 use rocket::response::status::Created;
-use rocket::serde::{json::Json, Deserialize, Serialize};
+use rocket::serde::json::Json;
 
 use crate::error::CustomError;
+use crate::http_models;
 use crate::models::{NewProject, Project};
 use crate::schema;
 use crate::DBPool;
 
-#[derive(Deserialize)]
-struct ProjectBasic {
-    end_date: Option<NaiveDate>,
-    start_date: NaiveDate,
-    title: String,
-}
-
-#[derive(Deserialize)]
-struct StandardRequest<T> {
-    data: T,
-}
-
-#[derive(Serialize)]
-struct StandardResponse<T> {
-    data: T,
-}
-
-type ProjectRequest = StandardRequest<ProjectBasic>;
-type ProjectResponse = StandardResponse<Project>;
-type ProjectListResponse = StandardResponse<Vec<Project>>;
+type ProjectRequest = http_models::ProjectRequest;
+type ProjectResponse = http_models::ProjectResponse;
+type ProjectListResponse = http_models::ProjectListResponse;
 
 pub fn get_routes() -> Vec<Route> {
     routes![
