@@ -1,8 +1,8 @@
 use crate::schema::projects;
 use chrono::NaiveDate;
-use rocket::serde::Serialize;
+use rocket::serde::{Deserialize, Serialize};
 
-#[derive(Queryable, Serialize)]
+#[derive(Deserialize, Queryable, Serialize)]
 pub struct Project {
     pub id: i32,
     pub end_date: Option<NaiveDate>,

@@ -6,8 +6,8 @@ extern crate rocket;
 extern crate rocket_sync_db_pools;
 
 mod api;
-mod error;
-mod models;
+pub mod error;
+pub mod models;
 mod schema;
 mod static_routes;
 
